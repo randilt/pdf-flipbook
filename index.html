@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>PDF Reader</title>
+    <title>IYAP PDF Reader</title>
     <meta
       name="viewport"
       content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
@@ -19,30 +19,85 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      #returnButton {
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+      }
+      #sidebar {
         position: fixed;
-        top: 20px;
-        left: 20px;
+        left: -250px;
+        top: 0;
+        bottom: 0;
+        width: 250px;
+        background-color: #2d3748;
+        transition: left 0.3s ease-in-out;
         z-index: 1000;
-        padding: 10px 20px;
-        background-color: #4a5568;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 20px;
+        color: white;
+      }
+      #sidebar.open {
+        left: 0;
+      }
+      #toggleSidebar {
+        position: fixed;
+        left: 10px;
+        top: 10px;
+        z-index: 1001;
+        background-color: rgba(45, 55, 72, 0.7);
         color: white;
         border: none;
-        border-radius: 5px;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+      }
+      #logo {
+        width: 100%;
+        max-width: 150px;
+        margin-bottom: 20px;
+      }
+      #flipbookContainer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
       }
     </style>
   </head>
   <body>
-    <button id="returnButton" onclick="returnToOriginalSite()">
-      Return to IYAP
-    </button>
+    <button id="toggleSidebar">☰</button>
+
+    <div id="sidebar">
+      <div>
+        <img id="logo" src="./logo.png" alt="IYAP Logo" />
+        <h1 id="pdfTitle" class="text-xl font-bold mb-4"></h1>
+      </div>
+      <button
+        id="returnButton"
+        onclick="returnToOriginalSite()"
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      >
+        Return to IYAP
+      </button>
+    </div>
+
     <div id="flipbookContainer"></div>
+
     <!-- jQuery  -->
     <script src="lib/js/libs/jquery.min.js" type="text/javascript"></script>
     <!-- Flipbook main Js file -->
     <script src="lib/js/dflip.min.js" type="text/javascript"></script>
-    <!-- Flipbook main Js file -->
     <script>
       function getParameterByName(name, url = window.location.href) {
         name = name.replace(/[\[\]]/g, "\\$&");
@@ -62,18 +117,29 @@
         }
       }
 
+      function updatePageTitle(pdfUrl) {
+        var fileName = pdfUrl.split("/").pop();
+        var title = fileName.replace(".pdf", "").replace(/-/g, " ");
+        document.title = title + " - IYAP PDF Reader";
+        document.getElementById("pdfTitle").textContent = title;
+      }
+
+      document
+        .getElementById("toggleSidebar")
+        .addEventListener("click", function () {
+          document.getElementById("sidebar").classList.toggle("open");
+        });
+
       jQuery(document).ready(function () {
         var pdf = getParameterByName("pdf");
-        {
-          {
-            /*  if (!pdf) {
-          pdf =
-            "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf"; // Default PDF if none specified
-        }  */
-          }
+        if (pdf) {
+          updatePageTitle(pdf);
+        } else {
+          document.getElementById("pdfTitle").textContent =
+            "International Youth Alliance for Peace";
         }
         var options = {
-          height: 2000,
+          height: "100%",
           duration: 700,
           backgroundColor: "#2F2D2F",
         };
